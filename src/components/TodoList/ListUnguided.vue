@@ -17,12 +17,17 @@
                 </v-btn>
             </v-card-title>
             <v-data-table :headers="headers" :items="todos" :search="search">
+                <template v-slot:[`item.priority`]="{ item }">
+                    <td>
+                        <v-chip  class="ma-2" :color="Color(item.priority)" label outlined >{{ item.priority }}</v-chip>
+                    </td>
+                </template>
                 <template v-slot:[`item.actions`]="{ item }">
                     <v-btn small class="mr-2" @click="editItem(item)">
                         Edit
                     </v-btn>
-                    <v-btn small @click="deleteItem(item)">
-                        delete
+                    <v-btn small class="mr-2" @click="deleteItem(item)">
+                        Delete
                     </v-btn>
                 </template>
             </v-data-table>
@@ -66,6 +71,62 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="Update" persistent max-width="600px">
+            <v-card>
+                <v-card-title>
+                    <span class="headline">Form Todo</span>
+                </v-card-title>
+                <v-card-text>
+                    <v-container>
+                        <v-text-field
+                            v-model="formTodo.task"
+                            label="Task"
+                            required
+                        ></v-text-field>
+ 
+                        <v-select
+                            v-model="formTodo.priority"
+                            :items="['Penting', 'Biasa', 'Tidak penting']"
+                            label="Priority"
+                            required
+                        ></v-select>
+                        
+                        <v-textarea
+                            v-model="formTodo.note"
+                            label="Note"
+                            required
+                        ></v-textarea>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="cancel">
+                        Cancel
+                    </v-btn>
+                    <v-btn color="blue darken-1" text @click="UpdateTodo">
+                        Edit
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="Delete" persistent max-width="600px">
+            <v-card>
+                <v-card-title>
+                    <span class="headline">Hapus Data ini?</span>
+                </v-card-title>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="red" text @click="cancel">
+                        Tidak
+                    </v-btn>
+                    <v-btn color="success" text @click="DeleteTodo">
+                        Ya
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-main>
 </template>
 
@@ -76,6 +137,9 @@ export default {
         return {
             search: null,
             dialog: false,
+            Delete: false,
+            Update: false,
+            UpdateIndex: null,
             headers: [
                 {
                     text: "Task",
@@ -109,6 +173,7 @@ export default {
                 priority: null,
                 note: null,
             },
+
         };
     },
     methods: {
@@ -120,6 +185,8 @@ export default {
         cancel() {
             this.resetForm();
             this.dialog = false;
+            this.Update = false;
+            this.Delete = false;
         },
         resetForm() {
             this.formTodo = {
@@ -127,6 +194,38 @@ export default {
                 priority: null,
                 note: null,
             };
+        },
+        Color(priority){
+            if(priority == "Penting"){
+                return 'red';
+            }else if(priority == "Tidak penting"){
+                return 'green';
+            }else{
+                return 'blue';
+            }
+        },
+        editItem(item){
+            this.UpdateIndex= this.todos.indexOf(item);
+            this.formTodo = {
+                task: item.task,
+                priority: item.priority,
+                note: item.note,
+            };
+            this.Update =  true;
+        },
+        UpdateTodo(){
+            this.Update = false;
+            this.todos[this.UpdateIndex].task = this.formTodo.task;
+            this.todos[this.UpdateIndex].priority = this.formTodo.priority;
+            this.todos[this.UpdateIndex].note = this.formTodo.note;
+        },
+        deleteItem(item){
+            this.Delete = true;
+            this.formTodo = item;
+        },
+        DeleteTodo(){
+            this.Delete = false;
+            this.todos.splice(this.todos.indexOf(this.formTodo),1);
         },
     },
 };
