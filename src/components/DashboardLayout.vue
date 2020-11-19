@@ -1,5 +1,6 @@
 <template>
     <div class="dashboard">
+        
         <v-navigation-drawer class="fullheight" width="256" permanent app fixed>
             <v-list-item>
                 <v-list-item-content>
@@ -28,6 +29,7 @@
             </v-list>
         </v-navigation-drawer>
         <div class="grey lighten-4 fullheight pa-5">
+            
             <router-view></router-view>
         </div>
     </div>
@@ -42,6 +44,7 @@ export default {
                 { title: "Dashboard", to: "/" },
                 { title: "GD", to: "/gd" },
                 { title: "UGD", to: "/ugd"},
+                { title: "TUGAS", to: "/tugas"}
             ],
         };
     },
